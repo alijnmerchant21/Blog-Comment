@@ -4,6 +4,7 @@ package cosmonaut.blog.blog;
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "blog/post.proto";
+import "blog/comment.proto";
 
 // this line is used by starport scaffolding # 1
 
@@ -16,6 +17,11 @@ service Query {
 		option (google.api.http).get = "/cosmonaut/blog/blog/posts";
 	}
 
+// Queries a list of comments items.
+	rpc Comments(QueryCommentsRequest) returns (QueryCommentsResponse) {
+		option (google.api.http).get = "/cosmonaut/blog/blog/comments";
+	}
+
 // this line is used by starport scaffolding # 2
 }
 
@@ -26,6 +32,17 @@ message QueryPostsRequest {
 message QueryPostsResponse {
   repeated Post Post = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryCommentsRequest {
+  uint64 id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryCommentsResponse {
+  Post Post = 1;
+  repeated Comment Comment = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
 // this line is used by starport scaffolding # 3

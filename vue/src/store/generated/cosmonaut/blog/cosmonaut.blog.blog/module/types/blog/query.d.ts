@@ -1,12 +1,22 @@
 import { Reader, Writer } from 'protobufjs/minimal';
 import { PageRequest, PageResponse } from '../cosmos/base/query/v1beta1/pagination';
 import { Post } from '../blog/post';
+import { Comment } from '../blog/comment';
 export declare const protobufPackage = "cosmonaut.blog.blog";
 export interface QueryPostsRequest {
     pagination: PageRequest | undefined;
 }
 export interface QueryPostsResponse {
     Post: Post[];
+    pagination: PageResponse | undefined;
+}
+export interface QueryCommentsRequest {
+    id: number;
+    pagination: PageRequest | undefined;
+}
+export interface QueryCommentsResponse {
+    Post: Post | undefined;
+    Comment: Comment[];
     pagination: PageResponse | undefined;
 }
 export declare const QueryPostsRequest: {
@@ -23,15 +33,32 @@ export declare const QueryPostsResponse: {
     toJSON(message: QueryPostsResponse): unknown;
     fromPartial(object: DeepPartial<QueryPostsResponse>): QueryPostsResponse;
 };
+export declare const QueryCommentsRequest: {
+    encode(message: QueryCommentsRequest, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryCommentsRequest;
+    fromJSON(object: any): QueryCommentsRequest;
+    toJSON(message: QueryCommentsRequest): unknown;
+    fromPartial(object: DeepPartial<QueryCommentsRequest>): QueryCommentsRequest;
+};
+export declare const QueryCommentsResponse: {
+    encode(message: QueryCommentsResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): QueryCommentsResponse;
+    fromJSON(object: any): QueryCommentsResponse;
+    toJSON(message: QueryCommentsResponse): unknown;
+    fromPartial(object: DeepPartial<QueryCommentsResponse>): QueryCommentsResponse;
+};
 /** Query defines the gRPC querier service. */
 export interface Query {
     /** Queries a list of posts items. */
     Posts(request: QueryPostsRequest): Promise<QueryPostsResponse>;
+    /** Queries a list of comments items. */
+    Comments(request: QueryCommentsRequest): Promise<QueryCommentsResponse>;
 }
 export declare class QueryClientImpl implements Query {
     private readonly rpc;
     constructor(rpc: Rpc);
     Posts(request: QueryPostsRequest): Promise<QueryPostsResponse>;
+    Comments(request: QueryCommentsRequest): Promise<QueryCommentsResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

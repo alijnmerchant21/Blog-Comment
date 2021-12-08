@@ -4,8 +4,21 @@ export interface MsgCreatePost {
     creator: string;
     title: string;
     body: string;
+    createdAt: number;
+    id: number;
 }
 export interface MsgCreatePostResponse {
+    id: number;
+}
+export interface MsgCreateComment {
+    creator: string;
+    postID: number;
+    title: string;
+    body: string;
+    createdAt: number;
+    id: number;
+}
+export interface MsgCreateCommentResponse {
     id: number;
 }
 export declare const MsgCreatePost: {
@@ -22,15 +35,31 @@ export declare const MsgCreatePostResponse: {
     toJSON(message: MsgCreatePostResponse): unknown;
     fromPartial(object: DeepPartial<MsgCreatePostResponse>): MsgCreatePostResponse;
 };
+export declare const MsgCreateComment: {
+    encode(message: MsgCreateComment, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgCreateComment;
+    fromJSON(object: any): MsgCreateComment;
+    toJSON(message: MsgCreateComment): unknown;
+    fromPartial(object: DeepPartial<MsgCreateComment>): MsgCreateComment;
+};
+export declare const MsgCreateCommentResponse: {
+    encode(message: MsgCreateCommentResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgCreateCommentResponse;
+    fromJSON(object: any): MsgCreateCommentResponse;
+    toJSON(message: MsgCreateCommentResponse): unknown;
+    fromPartial(object: DeepPartial<MsgCreateCommentResponse>): MsgCreateCommentResponse;
+};
 /** Msg defines the Msg service. */
 export interface Msg {
-    /** this line is used by starport scaffolding # proto/tx/rpc */
     CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>;
+    /** this line is used by starport scaffolding # proto/tx/rpc */
+    CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
     CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>;
+    CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

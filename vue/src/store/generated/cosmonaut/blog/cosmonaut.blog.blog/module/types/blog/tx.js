@@ -2,7 +2,7 @@
 import { Reader, util, configure, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 export const protobufPackage = 'cosmonaut.blog.blog';
-const baseMsgCreatePost = { creator: '', title: '', body: '' };
+const baseMsgCreatePost = { creator: '', title: '', body: '', createdAt: 0, id: 0 };
 export const MsgCreatePost = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
@@ -13,6 +13,12 @@ export const MsgCreatePost = {
         }
         if (message.body !== '') {
             writer.uint32(26).string(message.body);
+        }
+        if (message.createdAt !== 0) {
+            writer.uint32(32).int64(message.createdAt);
+        }
+        if (message.id !== 0) {
+            writer.uint32(40).uint64(message.id);
         }
         return writer;
     },
@@ -31,6 +37,12 @@ export const MsgCreatePost = {
                     break;
                 case 3:
                     message.body = reader.string();
+                    break;
+                case 4:
+                    message.createdAt = longToNumber(reader.int64());
+                    break;
+                case 5:
+                    message.id = longToNumber(reader.uint64());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -59,6 +71,18 @@ export const MsgCreatePost = {
         else {
             message.body = '';
         }
+        if (object.createdAt !== undefined && object.createdAt !== null) {
+            message.createdAt = Number(object.createdAt);
+        }
+        else {
+            message.createdAt = 0;
+        }
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
         return message;
     },
     toJSON(message) {
@@ -66,6 +90,8 @@ export const MsgCreatePost = {
         message.creator !== undefined && (obj.creator = message.creator);
         message.title !== undefined && (obj.title = message.title);
         message.body !== undefined && (obj.body = message.body);
+        message.createdAt !== undefined && (obj.createdAt = message.createdAt);
+        message.id !== undefined && (obj.id = message.id);
         return obj;
     },
     fromPartial(object) {
@@ -87,6 +113,18 @@ export const MsgCreatePost = {
         }
         else {
             message.body = '';
+        }
+        if (object.createdAt !== undefined && object.createdAt !== null) {
+            message.createdAt = object.createdAt;
+        }
+        else {
+            message.createdAt = 0;
+        }
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
         }
         return message;
     }
@@ -142,6 +180,203 @@ export const MsgCreatePostResponse = {
         return message;
     }
 };
+const baseMsgCreateComment = { creator: '', postID: 0, title: '', body: '', createdAt: 0, id: 0 };
+export const MsgCreateComment = {
+    encode(message, writer = Writer.create()) {
+        if (message.creator !== '') {
+            writer.uint32(10).string(message.creator);
+        }
+        if (message.postID !== 0) {
+            writer.uint32(16).uint64(message.postID);
+        }
+        if (message.title !== '') {
+            writer.uint32(26).string(message.title);
+        }
+        if (message.body !== '') {
+            writer.uint32(34).string(message.body);
+        }
+        if (message.createdAt !== 0) {
+            writer.uint32(40).int64(message.createdAt);
+        }
+        if (message.id !== 0) {
+            writer.uint32(48).uint64(message.id);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgCreateComment };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.creator = reader.string();
+                    break;
+                case 2:
+                    message.postID = longToNumber(reader.uint64());
+                    break;
+                case 3:
+                    message.title = reader.string();
+                    break;
+                case 4:
+                    message.body = reader.string();
+                    break;
+                case 5:
+                    message.createdAt = longToNumber(reader.int64());
+                    break;
+                case 6:
+                    message.id = longToNumber(reader.uint64());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgCreateComment };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = String(object.creator);
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.postID !== undefined && object.postID !== null) {
+            message.postID = Number(object.postID);
+        }
+        else {
+            message.postID = 0;
+        }
+        if (object.title !== undefined && object.title !== null) {
+            message.title = String(object.title);
+        }
+        else {
+            message.title = '';
+        }
+        if (object.body !== undefined && object.body !== null) {
+            message.body = String(object.body);
+        }
+        else {
+            message.body = '';
+        }
+        if (object.createdAt !== undefined && object.createdAt !== null) {
+            message.createdAt = Number(object.createdAt);
+        }
+        else {
+            message.createdAt = 0;
+        }
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.creator !== undefined && (obj.creator = message.creator);
+        message.postID !== undefined && (obj.postID = message.postID);
+        message.title !== undefined && (obj.title = message.title);
+        message.body !== undefined && (obj.body = message.body);
+        message.createdAt !== undefined && (obj.createdAt = message.createdAt);
+        message.id !== undefined && (obj.id = message.id);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgCreateComment };
+        if (object.creator !== undefined && object.creator !== null) {
+            message.creator = object.creator;
+        }
+        else {
+            message.creator = '';
+        }
+        if (object.postID !== undefined && object.postID !== null) {
+            message.postID = object.postID;
+        }
+        else {
+            message.postID = 0;
+        }
+        if (object.title !== undefined && object.title !== null) {
+            message.title = object.title;
+        }
+        else {
+            message.title = '';
+        }
+        if (object.body !== undefined && object.body !== null) {
+            message.body = object.body;
+        }
+        else {
+            message.body = '';
+        }
+        if (object.createdAt !== undefined && object.createdAt !== null) {
+            message.createdAt = object.createdAt;
+        }
+        else {
+            message.createdAt = 0;
+        }
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
+        }
+        return message;
+    }
+};
+const baseMsgCreateCommentResponse = { id: 0 };
+export const MsgCreateCommentResponse = {
+    encode(message, writer = Writer.create()) {
+        if (message.id !== 0) {
+            writer.uint32(8).uint64(message.id);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof Uint8Array ? new Reader(input) : input;
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = { ...baseMsgCreateCommentResponse };
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    message.id = longToNumber(reader.uint64());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+            }
+        }
+        return message;
+    },
+    fromJSON(object) {
+        const message = { ...baseMsgCreateCommentResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
+        return message;
+    },
+    toJSON(message) {
+        const obj = {};
+        message.id !== undefined && (obj.id = message.id);
+        return obj;
+    },
+    fromPartial(object) {
+        const message = { ...baseMsgCreateCommentResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
+        }
+        return message;
+    }
+};
 export class MsgClientImpl {
     constructor(rpc) {
         this.rpc = rpc;
@@ -150,6 +385,11 @@ export class MsgClientImpl {
         const data = MsgCreatePost.encode(request).finish();
         const promise = this.rpc.request('cosmonaut.blog.blog.Msg', 'CreatePost', data);
         return promise.then((data) => MsgCreatePostResponse.decode(new Reader(data)));
+    }
+    CreateComment(request) {
+        const data = MsgCreateComment.encode(request).finish();
+        const promise = this.rpc.request('cosmonaut.blog.blog.Msg', 'CreateComment', data);
+        return promise.then((data) => MsgCreateCommentResponse.decode(new Reader(data)));
     }
 }
 var globalThis = (() => {

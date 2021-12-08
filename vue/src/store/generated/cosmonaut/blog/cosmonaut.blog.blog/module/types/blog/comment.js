@@ -2,8 +2,8 @@
 import * as Long from 'long';
 import { util, configure, Writer, Reader } from 'protobufjs/minimal';
 export const protobufPackage = 'cosmonaut.blog.blog';
-const basePost = { creator: '', id: 0, title: '', body: '', createdAt: 0 };
-export const Post = {
+const baseComment = { creator: '', id: 0, title: '', body: '', postID: 0, createdAt: 0 };
+export const Comment = {
     encode(message, writer = Writer.create()) {
         if (message.creator !== '') {
             writer.uint32(10).string(message.creator);
@@ -17,15 +17,18 @@ export const Post = {
         if (message.body !== '') {
             writer.uint32(34).string(message.body);
         }
+        if (message.postID !== 0) {
+            writer.uint32(40).uint64(message.postID);
+        }
         if (message.createdAt !== 0) {
-            writer.uint32(40).int64(message.createdAt);
+            writer.uint32(48).int64(message.createdAt);
         }
         return writer;
     },
     decode(input, length) {
         const reader = input instanceof Uint8Array ? new Reader(input) : input;
         let end = length === undefined ? reader.len : reader.pos + length;
-        const message = { ...basePost };
+        const message = { ...baseComment };
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
@@ -42,6 +45,9 @@ export const Post = {
                     message.body = reader.string();
                     break;
                 case 5:
+                    message.postID = longToNumber(reader.uint64());
+                    break;
+                case 6:
                     message.createdAt = longToNumber(reader.int64());
                     break;
                 default:
@@ -52,7 +58,7 @@ export const Post = {
         return message;
     },
     fromJSON(object) {
-        const message = { ...basePost };
+        const message = { ...baseComment };
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = String(object.creator);
         }
@@ -77,6 +83,12 @@ export const Post = {
         else {
             message.body = '';
         }
+        if (object.postID !== undefined && object.postID !== null) {
+            message.postID = Number(object.postID);
+        }
+        else {
+            message.postID = 0;
+        }
         if (object.createdAt !== undefined && object.createdAt !== null) {
             message.createdAt = Number(object.createdAt);
         }
@@ -91,11 +103,12 @@ export const Post = {
         message.id !== undefined && (obj.id = message.id);
         message.title !== undefined && (obj.title = message.title);
         message.body !== undefined && (obj.body = message.body);
+        message.postID !== undefined && (obj.postID = message.postID);
         message.createdAt !== undefined && (obj.createdAt = message.createdAt);
         return obj;
     },
     fromPartial(object) {
-        const message = { ...basePost };
+        const message = { ...baseComment };
         if (object.creator !== undefined && object.creator !== null) {
             message.creator = object.creator;
         }
@@ -119,6 +132,12 @@ export const Post = {
         }
         else {
             message.body = '';
+        }
+        if (object.postID !== undefined && object.postID !== null) {
+            message.postID = object.postID;
+        }
+        else {
+            message.postID = 0;
         }
         if (object.createdAt !== undefined && object.createdAt !== null) {
             message.createdAt = object.createdAt;

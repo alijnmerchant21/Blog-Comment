@@ -2,10 +2,11 @@ import { txClient, queryClient, MissingWalletError } from './module'
 // @ts-ignore
 import { SpVuexError } from '@starport/vuex'
 
+import { Comment } from "./module/types/blog/comment"
 import { Post } from "./module/types/blog/post"
 
 
-export { Post };
+export { Comment, Post };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -44,8 +45,10 @@ function getStructure(template) {
 const getDefaultState = () => {
 	return {
 				Posts: {},
+				Comments: {},
 				
 				_Structure: {
+						Comment: getStructure(Comment.fromPartial({})),
 						Post: getStructure(Post.fromPartial({})),
 						
 		},
@@ -79,6 +82,12 @@ export default {
 						(<any> params).query=null
 					}
 			return state.Posts[JSON.stringify(params)] ?? {}
+		},
+				getComments: (state) => (params = { params: {}}) => {
+					if (!(<any> params).query) {
+						(<any> params).query=null
+					}
+			return state.Comments[JSON.stringify(params)] ?? {}
 		},
 				
 		getTypeStructure: (state) => (type) => {
@@ -135,6 +144,31 @@ export default {
 		},
 		
 		
+		
+		
+		 		
+		
+		
+		async QueryComments({ commit, rootGetters, getters }, { options: { subscribe, all} = { subscribe:false, all:false}, params: {...key}, query=null }) {
+			try {
+				const queryClient=await initQueryClient(rootGetters)
+				let value= (await queryClient.queryComments(query)).data
+				
+					
+				while (all && (<any> value).pagination && (<any> value).pagination.nextKey!=null) {
+					let next_values=(await queryClient.queryComments({...query, 'pagination.key':(<any> value).pagination.nextKey})).data
+					value = mergeResults(value, next_values);
+				}
+				commit('QUERY', { query: 'Comments', key: { params: {...key}, query}, value })
+				if (subscribe) commit('SUBSCRIBE', { action: 'QueryComments', payload: { options: { all }, params: {...key},query }})
+				return getters['getComments']( { params: {...key}, query}) ?? {}
+			} catch (e) {
+				throw new SpVuexError('QueryClient:QueryComments', 'API Node Unavailable. Could not perform query: ' + e.message)
+				
+			}
+		},
+		
+		
 		async sendMsgCreatePost({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
@@ -150,6 +184,21 @@ export default {
 				}
 			}
 		},
+		async sendMsgCreateComment({ rootGetters }, { value, fee = [], memo = '' }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateComment(value)
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
+	gas: "200000" }, memo})
+				return result
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgCreateComment:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgCreateComment:Send', 'Could not broadcast Tx: '+ e.message)
+				}
+			}
+		},
 		
 		async MsgCreatePost({ rootGetters }, { value }) {
 			try {
@@ -161,6 +210,20 @@ export default {
 					throw new SpVuexError('TxClient:MsgCreatePost:Init', 'Could not initialize signing client. Wallet is required.')
 				}else{
 					throw new SpVuexError('TxClient:MsgCreatePost:Create', 'Could not create message: ' + e.message)
+					
+				}
+			}
+		},
+		async MsgCreateComment({ rootGetters }, { value }) {
+			try {
+				const txClient=await initTxClient(rootGetters)
+				const msg = await txClient.msgCreateComment(value)
+				return msg
+			} catch (e) {
+				if (e == MissingWalletError) {
+					throw new SpVuexError('TxClient:MsgCreateComment:Init', 'Could not initialize signing client. Wallet is required.')
+				}else{
+					throw new SpVuexError('TxClient:MsgCreateComment:Create', 'Could not create message: ' + e.message)
 					
 				}
 			}

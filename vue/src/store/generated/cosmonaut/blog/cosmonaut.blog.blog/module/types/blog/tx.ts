@@ -8,13 +8,28 @@ export interface MsgCreatePost {
   creator: string
   title: string
   body: string
+  createdAt: number
+  id: number
 }
 
 export interface MsgCreatePostResponse {
   id: number
 }
 
-const baseMsgCreatePost: object = { creator: '', title: '', body: '' }
+export interface MsgCreateComment {
+  creator: string
+  postID: number
+  title: string
+  body: string
+  createdAt: number
+  id: number
+}
+
+export interface MsgCreateCommentResponse {
+  id: number
+}
+
+const baseMsgCreatePost: object = { creator: '', title: '', body: '', createdAt: 0, id: 0 }
 
 export const MsgCreatePost = {
   encode(message: MsgCreatePost, writer: Writer = Writer.create()): Writer {
@@ -26,6 +41,12 @@ export const MsgCreatePost = {
     }
     if (message.body !== '') {
       writer.uint32(26).string(message.body)
+    }
+    if (message.createdAt !== 0) {
+      writer.uint32(32).int64(message.createdAt)
+    }
+    if (message.id !== 0) {
+      writer.uint32(40).uint64(message.id)
     }
     return writer
   },
@@ -45,6 +66,12 @@ export const MsgCreatePost = {
           break
         case 3:
           message.body = reader.string()
+          break
+        case 4:
+          message.createdAt = longToNumber(reader.int64() as Long)
+          break
+        case 5:
+          message.id = longToNumber(reader.uint64() as Long)
           break
         default:
           reader.skipType(tag & 7)
@@ -71,6 +98,16 @@ export const MsgCreatePost = {
     } else {
       message.body = ''
     }
+    if (object.createdAt !== undefined && object.createdAt !== null) {
+      message.createdAt = Number(object.createdAt)
+    } else {
+      message.createdAt = 0
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
     return message
   },
 
@@ -79,6 +116,8 @@ export const MsgCreatePost = {
     message.creator !== undefined && (obj.creator = message.creator)
     message.title !== undefined && (obj.title = message.title)
     message.body !== undefined && (obj.body = message.body)
+    message.createdAt !== undefined && (obj.createdAt = message.createdAt)
+    message.id !== undefined && (obj.id = message.id)
     return obj
   },
 
@@ -98,6 +137,16 @@ export const MsgCreatePost = {
       message.body = object.body
     } else {
       message.body = ''
+    }
+    if (object.createdAt !== undefined && object.createdAt !== null) {
+      message.createdAt = object.createdAt
+    } else {
+      message.createdAt = 0
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
     }
     return message
   }
@@ -158,10 +207,206 @@ export const MsgCreatePostResponse = {
   }
 }
 
+const baseMsgCreateComment: object = { creator: '', postID: 0, title: '', body: '', createdAt: 0, id: 0 }
+
+export const MsgCreateComment = {
+  encode(message: MsgCreateComment, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.postID !== 0) {
+      writer.uint32(16).uint64(message.postID)
+    }
+    if (message.title !== '') {
+      writer.uint32(26).string(message.title)
+    }
+    if (message.body !== '') {
+      writer.uint32(34).string(message.body)
+    }
+    if (message.createdAt !== 0) {
+      writer.uint32(40).int64(message.createdAt)
+    }
+    if (message.id !== 0) {
+      writer.uint32(48).uint64(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateComment {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgCreateComment } as MsgCreateComment
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.postID = longToNumber(reader.uint64() as Long)
+          break
+        case 3:
+          message.title = reader.string()
+          break
+        case 4:
+          message.body = reader.string()
+          break
+        case 5:
+          message.createdAt = longToNumber(reader.int64() as Long)
+          break
+        case 6:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgCreateComment {
+    const message = { ...baseMsgCreateComment } as MsgCreateComment
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.postID !== undefined && object.postID !== null) {
+      message.postID = Number(object.postID)
+    } else {
+      message.postID = 0
+    }
+    if (object.title !== undefined && object.title !== null) {
+      message.title = String(object.title)
+    } else {
+      message.title = ''
+    }
+    if (object.body !== undefined && object.body !== null) {
+      message.body = String(object.body)
+    } else {
+      message.body = ''
+    }
+    if (object.createdAt !== undefined && object.createdAt !== null) {
+      message.createdAt = Number(object.createdAt)
+    } else {
+      message.createdAt = 0
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
+    return message
+  },
+
+  toJSON(message: MsgCreateComment): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.postID !== undefined && (obj.postID = message.postID)
+    message.title !== undefined && (obj.title = message.title)
+    message.body !== undefined && (obj.body = message.body)
+    message.createdAt !== undefined && (obj.createdAt = message.createdAt)
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgCreateComment>): MsgCreateComment {
+    const message = { ...baseMsgCreateComment } as MsgCreateComment
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.postID !== undefined && object.postID !== null) {
+      message.postID = object.postID
+    } else {
+      message.postID = 0
+    }
+    if (object.title !== undefined && object.title !== null) {
+      message.title = object.title
+    } else {
+      message.title = ''
+    }
+    if (object.body !== undefined && object.body !== null) {
+      message.body = object.body
+    } else {
+      message.body = ''
+    }
+    if (object.createdAt !== undefined && object.createdAt !== null) {
+      message.createdAt = object.createdAt
+    } else {
+      message.createdAt = 0
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
+    return message
+  }
+}
+
+const baseMsgCreateCommentResponse: object = { id: 0 }
+
+export const MsgCreateCommentResponse = {
+  encode(message: MsgCreateCommentResponse, writer: Writer = Writer.create()): Writer {
+    if (message.id !== 0) {
+      writer.uint32(8).uint64(message.id)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgCreateCommentResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgCreateCommentResponse } as MsgCreateCommentResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgCreateCommentResponse {
+    const message = { ...baseMsgCreateCommentResponse } as MsgCreateCommentResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
+    return message
+  },
+
+  toJSON(message: MsgCreateCommentResponse): unknown {
+    const obj: any = {}
+    message.id !== undefined && (obj.id = message.id)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgCreateCommentResponse>): MsgCreateCommentResponse {
+    const message = { ...baseMsgCreateCommentResponse } as MsgCreateCommentResponse
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
+    return message
+  }
+}
+
 /** Msg defines the Msg service. */
 export interface Msg {
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -173,6 +418,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgCreatePost.encode(request).finish()
     const promise = this.rpc.request('cosmonaut.blog.blog.Msg', 'CreatePost', data)
     return promise.then((data) => MsgCreatePostResponse.decode(new Reader(data)))
+  }
+
+  CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse> {
+    const data = MsgCreateComment.encode(request).finish()
+    const promise = this.rpc.request('cosmonaut.blog.blog.Msg', 'CreateComment', data)
+    return promise.then((data) => MsgCreateCommentResponse.decode(new Reader(data)))
   }
 }
 
