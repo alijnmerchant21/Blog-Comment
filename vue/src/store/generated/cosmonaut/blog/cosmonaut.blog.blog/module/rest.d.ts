@@ -17,6 +17,7 @@ export interface BlogMsgCreatePostResponse {
     /** @format uint64 */
     id?: string;
 }
+export declare type BlogMsgDeleteCommentResponse = object;
 export interface BlogPost {
     creator?: string;
     /** @format uint64 */
