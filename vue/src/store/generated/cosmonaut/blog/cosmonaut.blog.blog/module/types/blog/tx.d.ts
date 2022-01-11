@@ -21,6 +21,15 @@ export interface MsgCreateComment {
 export interface MsgCreateCommentResponse {
     id: number;
 }
+export interface MsgDeleteComment {
+    creator: string;
+    /** comment id */
+    id: number;
+    /** post id */
+    postID: number;
+}
+export interface MsgDeleteCommentResponse {
+}
 export declare const MsgCreatePost: {
     encode(message: MsgCreatePost, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgCreatePost;
@@ -49,17 +58,33 @@ export declare const MsgCreateCommentResponse: {
     toJSON(message: MsgCreateCommentResponse): unknown;
     fromPartial(object: DeepPartial<MsgCreateCommentResponse>): MsgCreateCommentResponse;
 };
+export declare const MsgDeleteComment: {
+    encode(message: MsgDeleteComment, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgDeleteComment;
+    fromJSON(object: any): MsgDeleteComment;
+    toJSON(message: MsgDeleteComment): unknown;
+    fromPartial(object: DeepPartial<MsgDeleteComment>): MsgDeleteComment;
+};
+export declare const MsgDeleteCommentResponse: {
+    encode(_: MsgDeleteCommentResponse, writer?: Writer): Writer;
+    decode(input: Reader | Uint8Array, length?: number): MsgDeleteCommentResponse;
+    fromJSON(_: any): MsgDeleteCommentResponse;
+    toJSON(_: MsgDeleteCommentResponse): unknown;
+    fromPartial(_: DeepPartial<MsgDeleteCommentResponse>): MsgDeleteCommentResponse;
+};
 /** Msg defines the Msg service. */
 export interface Msg {
     CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>;
-    /** this line is used by starport scaffolding # proto/tx/rpc */
     CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse>;
+    /** this line is used by starport scaffolding # proto/tx/rpc */
+    DeleteComment(request: MsgDeleteComment): Promise<MsgDeleteCommentResponse>;
 }
 export declare class MsgClientImpl implements Msg {
     private readonly rpc;
     constructor(rpc: Rpc);
     CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>;
     CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse>;
+    DeleteComment(request: MsgDeleteComment): Promise<MsgDeleteCommentResponse>;
 }
 interface Rpc {
     request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;

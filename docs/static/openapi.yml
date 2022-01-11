@@ -12811,6 +12811,8 @@ definitions:
       id:
         type: string
         format: uint64
+  cosmonaut.blog.blog.MsgDeleteCommentResponse:
+    type: object
   cosmonaut.blog.blog.Post:
     type: object
     properties:

@@ -34,6 +34,8 @@ export interface BlogMsgCreatePostResponse {
   id?: string;
 }
 
+export type BlogMsgDeleteCommentResponse = object;
+
 export interface BlogPost {
   creator?: string;
 

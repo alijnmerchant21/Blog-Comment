@@ -29,6 +29,16 @@ export interface MsgCreateCommentResponse {
   id: number
 }
 
+export interface MsgDeleteComment {
+  creator: string
+  /** comment id */
+  id: number
+  /** post id */
+  postID: number
+}
+
+export interface MsgDeleteCommentResponse {}
+
 const baseMsgCreatePost: object = { creator: '', title: '', body: '', createdAt: 0, id: 0 }
 
 export const MsgCreatePost = {
@@ -402,11 +412,139 @@ export const MsgCreateCommentResponse = {
   }
 }
 
+const baseMsgDeleteComment: object = { creator: '', id: 0, postID: 0 }
+
+export const MsgDeleteComment = {
+  encode(message: MsgDeleteComment, writer: Writer = Writer.create()): Writer {
+    if (message.creator !== '') {
+      writer.uint32(10).string(message.creator)
+    }
+    if (message.id !== 0) {
+      writer.uint32(16).uint64(message.id)
+    }
+    if (message.postID !== 0) {
+      writer.uint32(24).uint64(message.postID)
+    }
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgDeleteComment {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgDeleteComment } as MsgDeleteComment
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string()
+          break
+        case 2:
+          message.id = longToNumber(reader.uint64() as Long)
+          break
+        case 3:
+          message.postID = longToNumber(reader.uint64() as Long)
+          break
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(object: any): MsgDeleteComment {
+    const message = { ...baseMsgDeleteComment } as MsgDeleteComment
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = String(object.creator)
+    } else {
+      message.creator = ''
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = Number(object.id)
+    } else {
+      message.id = 0
+    }
+    if (object.postID !== undefined && object.postID !== null) {
+      message.postID = Number(object.postID)
+    } else {
+      message.postID = 0
+    }
+    return message
+  },
+
+  toJSON(message: MsgDeleteComment): unknown {
+    const obj: any = {}
+    message.creator !== undefined && (obj.creator = message.creator)
+    message.id !== undefined && (obj.id = message.id)
+    message.postID !== undefined && (obj.postID = message.postID)
+    return obj
+  },
+
+  fromPartial(object: DeepPartial<MsgDeleteComment>): MsgDeleteComment {
+    const message = { ...baseMsgDeleteComment } as MsgDeleteComment
+    if (object.creator !== undefined && object.creator !== null) {
+      message.creator = object.creator
+    } else {
+      message.creator = ''
+    }
+    if (object.id !== undefined && object.id !== null) {
+      message.id = object.id
+    } else {
+      message.id = 0
+    }
+    if (object.postID !== undefined && object.postID !== null) {
+      message.postID = object.postID
+    } else {
+      message.postID = 0
+    }
+    return message
+  }
+}
+
+const baseMsgDeleteCommentResponse: object = {}
+
+export const MsgDeleteCommentResponse = {
+  encode(_: MsgDeleteCommentResponse, writer: Writer = Writer.create()): Writer {
+    return writer
+  },
+
+  decode(input: Reader | Uint8Array, length?: number): MsgDeleteCommentResponse {
+    const reader = input instanceof Uint8Array ? new Reader(input) : input
+    let end = length === undefined ? reader.len : reader.pos + length
+    const message = { ...baseMsgDeleteCommentResponse } as MsgDeleteCommentResponse
+    while (reader.pos < end) {
+      const tag = reader.uint32()
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7)
+          break
+      }
+    }
+    return message
+  },
+
+  fromJSON(_: any): MsgDeleteCommentResponse {
+    const message = { ...baseMsgDeleteCommentResponse } as MsgDeleteCommentResponse
+    return message
+  },
+
+  toJSON(_: MsgDeleteCommentResponse): unknown {
+    const obj: any = {}
+    return obj
+  },
+
+  fromPartial(_: DeepPartial<MsgDeleteCommentResponse>): MsgDeleteCommentResponse {
+    const message = { ...baseMsgDeleteCommentResponse } as MsgDeleteCommentResponse
+    return message
+  }
+}
+
 /** Msg defines the Msg service. */
 export interface Msg {
   CreatePost(request: MsgCreatePost): Promise<MsgCreatePostResponse>
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   CreateComment(request: MsgCreateComment): Promise<MsgCreateCommentResponse>
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  DeleteComment(request: MsgDeleteComment): Promise<MsgDeleteCommentResponse>
 }
 
 export class MsgClientImpl implements Msg {
@@ -424,6 +562,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgCreateComment.encode(request).finish()
     const promise = this.rpc.request('cosmonaut.blog.blog.Msg', 'CreateComment', data)
     return promise.then((data) => MsgCreateCommentResponse.decode(new Reader(data)))
+  }
+
+  DeleteComment(request: MsgDeleteComment): Promise<MsgDeleteCommentResponse> {
+    const data = MsgDeleteComment.encode(request).finish()
+    const promise = this.rpc.request('cosmonaut.blog.blog.Msg', 'DeleteComment', data)
+    return promise.then((data) => MsgDeleteCommentResponse.decode(new Reader(data)))
   }
 }
 
